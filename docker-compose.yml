@@ -1,0 +1,14 @@
+version: '3'
+services:
+  llm-hackathon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3333:3333
+    volumes:
+      - type: bind
+        source: "./"
+        target: "/work"
+    env_file:
+      - ~/.env

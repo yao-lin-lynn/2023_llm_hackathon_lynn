@@ -2,11 +2,12 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from llama_index import SimpleDirectoryReader
-from llama_index import GPTListIndex
-
 import openai
 import os
+import logging
+import sys
+
+from llama_index import VectorStoreIndex, SimpleDirectoryReader
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -16,7 +17,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 st.balloons()
 
 documents = SimpleDirectoryReader(input_dir="./data").load_data()
-list_index = GPTListIndex.from_documents(documents)
+list_index = VectorStoreIndex.from_documents(documents)
 
 txt = st.text_area('質問を入力してください', '''
     今日の天気を教えてください
@@ -31,6 +32,8 @@ if st.button('にゃんぽんりんGPTに聞く'):
         st.write('\n')
 
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
 

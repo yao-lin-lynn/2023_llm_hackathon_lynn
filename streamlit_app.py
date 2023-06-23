@@ -7,17 +7,20 @@ import os
 import logging
 import sys
 
-from llama_index import VectorStoreIndex, SimpleDirectoryReader
+from llama_index import QuestionAnswerPrompt, VectorStoreIndex, SimpleDirectoryReader
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 """
 # ハッカソンやるぞ〜
 """
-st.balloons()
 
 documents = SimpleDirectoryReader(input_dir="./data").load_data()
-list_index = VectorStoreIndex.from_documents(documents)
+index = VectorStoreIndex.from_documents(documents)
+
+prompt_file = 'prompt.txt'
+with open(prompt_file, 'r', encoding='utf-8') as file:
+    QA_PROMPT_TMPL = file.read()
 
 txt = st.text_area('質問を入力してください', '''
     今日の天気を教えてください
@@ -25,10 +28,11 @@ txt = st.text_area('質問を入力してください', '''
 
 if st.button('にゃんぽんりんGPTに聞く'):
     with st.spinner('考え中...'):
-        query_engine = list_index.as_query_engine()
+        QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
+        query_engine = index.as_query_engine(text_qa_template=QA_PROMPT)
         response = query_engine.query(txt)
     for i in response.response.split("。"):
-        st.write(i + "。")
+        st.write(i)
         st.write('\n')
 
 

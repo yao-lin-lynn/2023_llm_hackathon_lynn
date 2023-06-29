@@ -2,8 +2,12 @@ import os
 import openai
 import streamlit as st
 from streamlit_chat import message
+from llama_index import VectorStoreIndex, SimpleDirectoryReader
+
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
+documents = SimpleDirectoryReader(input_dir="./data").load_data()
+index = VectorStoreIndex.from_documents(documents)
 
 st.title("💬 にゃんぽんりんGPT")
 if "messages" not in st.session_state:
@@ -25,7 +29,11 @@ if user_input and openai_api_key:
     openai.api_key = openai_api_key
     st.session_state.messages.append({"role": "user", "content": user_input})
     message(user_input, is_user=True)
-    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
-    msg = response.choices[0].message
-    st.session_state.messages.append(msg)
-    message(msg.content)
+    query_engine = index.as_query_engine()
+    print(st.session_state.messages)
+    response = query_engine.query(user_input)
+    # response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
+    # msg = response.choices[0].message
+    # st.session_state.messages.append(msg)
+    st.session_state.messages.append({"role": "assistant", "content": response.response})
+    message(response.response)

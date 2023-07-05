@@ -11,7 +11,7 @@ index = VectorStoreIndex.from_documents(documents)
 
 st.title("💬 にゃんぽんりんGPT")
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "どんな御用でしょうか"}]
+    st.session_state["messages"] = [{"role": "assistant", "content": "ヘイ！こんにちは、僕はSmartHRで働いている人に詳しいので、相談したい人についてなんでも聞いてね！"}]
 
 with st.form("chat_input", clear_on_submit=True):
     a, b = st.columns([4, 1])
